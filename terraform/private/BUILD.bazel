@@ -1,0 +1,54 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+exports_files(
+    glob(["*.bzl"]),
+    visibility = ["//docs:__pkg__"],
+)
+
+exports_files(glob(["*.tpl"]) + ["empty.tar"])
+
+bzl_library(
+    name = "root",
+    srcs = ["root.bzl"],
+    visibility = [
+        "//docs:__pkg__",
+        "//terraform:__subpackages__",
+    ],
+    deps = [
+        "//terraform/private:util",
+    ],
+)
+
+bzl_library(
+    name = "module",
+    srcs = ["module.bzl"],
+    visibility = [
+        "//docs:__pkg__",
+        "//terraform:__subpackages__",
+    ],
+    deps = [
+        "//terraform/private:util",
+    ],
+)
+
+bzl_library(
+    name = "toolchains_repo",
+    srcs = ["toolchains_repo.bzl"],
+    visibility = [
+        "//cosign:__subpackages__",
+        "//terraform:__subpackages__",
+    ],
+)
+
+bzl_library(
+    name = "versions",
+    srcs = ["versions.bzl"],
+    visibility = ["//terraform:__subpackages__"],
+)
+
+bzl_library(
+    name = "util",
+    srcs = ["util.bzl"],
+    visibility = ["//terraform:__subpackages__"],
+    deps = ["@bazel_skylib//lib:versions"],
+)

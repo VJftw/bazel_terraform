@@ -1,0 +1,4 @@
+sh_binary(
+    name = "mirror_terraform_releases",
+    srcs = ["mirror_terraform_releases.sh"],
+)

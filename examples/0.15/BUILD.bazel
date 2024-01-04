@@ -1,0 +1,17 @@
+load("//terraform:defs.bzl", "terraform_root")
+
+terraform_root(
+    name = "0.15",
+    srcs = [
+        "main.tf",
+        "variables.tf",
+        "//examples/common:state-backend.tf",
+    ],
+    modules = [
+        "//examples/0.15/my_module",
+    ],
+    terraform_version = "0.15",
+    var_files = [
+        "my_vars.tfvars",
+    ],
+)
