@@ -1,0 +1,10 @@
+load("@bazel_terraform//terraform:defs.bzl", "terraform_module")
+
+terraform_module(
+    name = "my_module",
+    srcs = [
+        "data.tf",
+        "main.tf",
+    ],
+    visibility = ["//0.11:__subpackages__"],
+)

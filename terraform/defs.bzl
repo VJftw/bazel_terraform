@@ -2,7 +2,7 @@
 To load these rules, add this to the top of your `BUILD` file:
 
 ```starlark
-load("@rules_oci//oci:defs.bzl", ...)
+load("@rules_oci//terraform:defs.bzl", ...)
 ```
 """
 

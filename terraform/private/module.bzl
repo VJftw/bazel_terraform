@@ -73,7 +73,7 @@ terraform_module_lib = struct(
     implementation = _impl,
     attrs = _attrs,
     # toolchains = [
-    #     "@rules_terraform//terraform:terraform_toolchain_type",
+    #     "@bazel_terraform//terraform:terraform_toolchain_type",
     # ],
 )
 

@@ -4,32 +4,31 @@
 #
 # For more details, please check https://github.com/bazelbuild/bazel/issues/18958
 ###############################################################################
-"VJftw/rules_terraform"
+"VJftw/bazel_terraform"
 
 module(
-    name = "rules_terraform",
+    name = "bazel_terraform",
     version = "0.0.0",
     compatibility_level = 1,
 )
 
 # Dependencies
 
-bazel_dep(name = "platforms", version = "0.0.8")
 bazel_dep(name = "aspect_bazel_lib", version = "2.1.0")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "platforms", version = "0.0.8")
 
-# Dev - local
+# # Dev - local
 
-terraform = use_extension("//terraform:extensions.bzl", "terraform")
+# terraform = use_extension("//terraform:extensions.bzl", "terraform")
 
-terraform.toolchains(terraform_version = "1.6.6")
-terraform.toolchains(terraform_version = "1.2.8")
-terraform.toolchains(terraform_version = "1.1.4")
-terraform.toolchains(terraform_version = "1.0.3")
-terraform.toolchains(terraform_version = "0.15.4")
-terraform.toolchains(terraform_version = "0.14.11")
-terraform.toolchains(terraform_version = "0.13.7")
-terraform.toolchains(terraform_version = "0.12.31")
-terraform.toolchains(terraform_version = "0.11.15")
-use_repo(terraform, "terraform_terraform_toolchains")
-register_toolchains("@terraform_terraform_toolchains//:all")
+# terraform.toolchains(terraform_version = "1.6.6")
+# terraform.toolchains(terraform_version = "1.2.8")
+# terraform.toolchains(terraform_version = "1.1.4")
+# terraform.toolchains(terraform_version = "1.0.3")
+# terraform.toolchains(terraform_version = "0.15.4")
+# terraform.toolchains(terraform_version = "0.14.11")
+# terraform.toolchains(terraform_version = "0.13.7")
+# terraform.toolchains(terraform_version = "0.12.31")
+# terraform.toolchains(terraform_version = "0.11.15")
+# use_repo(terraform, "terraform_terraform_toolchains")
