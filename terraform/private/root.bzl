@@ -34,7 +34,7 @@ def _impl(ctx):
 
     # validate attrs
     # use first defined terraform from toolchain as default.
-    terraform = ctx.toolchains["@rules_terraform//terraform:terraform_toolchain_type"]
+    terraform = ctx.toolchains["@bazel_terraform//terraform:terraform_toolchain_type"]
 
     if len(terraform.terraform_info.versions) < 1:
         fail("no terraform versions defined.")
@@ -124,7 +124,7 @@ def _impl(ctx):
 
     return DefaultInfo(
         executable = maybe_create_windows_native_launcher_script(ctx, executable),
-        # files = depset(outs),
+        files = depset(outs),
         runfiles = runfiles,
     )
 
@@ -132,7 +132,7 @@ terraform_root_lib = struct(
     implementation = _impl,
     attrs = _attrs,
     toolchains = [
-        "@rules_terraform//terraform:terraform_toolchain_type",
+        "@bazel_terraform//terraform:terraform_toolchain_type",
     ],
 )
 
