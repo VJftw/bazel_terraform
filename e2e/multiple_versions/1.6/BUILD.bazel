@@ -1,0 +1,23 @@
+load("@bazel_terraform//terraform:defs.bzl", "terraform_root")
+
+terraform_root(
+    name = "1.6",
+    srcs = [
+        "main.tf",
+        "variables.tf",
+    ],
+    terraform_version = "1.6",
+    var_files = [
+        "my_vars.tfvars",
+    ],
+)
+
+sh_test(
+    name = "validate_1.6",
+    srcs = ["//:terraform_root_test.sh"],
+    args = [
+        "$(location :1.6)",
+        "1.6.3",
+    ],
+    data = [":1.6"],
+)
