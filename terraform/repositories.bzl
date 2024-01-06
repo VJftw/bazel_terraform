@@ -35,7 +35,7 @@ shift
 
 # execute user-provided commands. This may be a shell (`bash`/`sh`) which would
 # inherit the PATH variable with the `terraform` binary from the toolchain.
-"$@"
+eval "$@"
 """
 
 def _terraform_repo_impl(repository_ctx):

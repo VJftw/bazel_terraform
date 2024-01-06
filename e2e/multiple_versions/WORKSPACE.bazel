@@ -1,0 +1,25 @@
+workspace(name = "workspace")
+
+local_repository(
+    name = "bazel_terraform",
+    path = "../../",
+)
+
+#---SNIP--- Below here is re-used in the workspace snippet published on releases
+
+load("@bazel_terraform//terraform:dependencies.bzl", "bazel_terraform_dependencies")
+
+bazel_terraform_dependencies()
+
+load("@bazel_terraform//terraform:repositories.bzl", "terraform_register_toolchains")
+
+terraform_register_toolchains(
+    name = "terraform",
+    terraform_version_config = {
+        "1.6.3": json.encode({}),
+        "1.0.4": json.encode({}),
+        "0.14.2": json.encode({}),
+        "0.12.31": json.encode({}),
+        "0.11.15": json.encode({}),
+    },
+)

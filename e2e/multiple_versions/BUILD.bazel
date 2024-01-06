@@ -1,0 +1,4 @@
+exports_files(
+    ["terraform_root_test.sh"],
+    visibility = ["//:__subpackages__"],
+)

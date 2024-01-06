@@ -1,0 +1,22 @@
+load("@bazel_terraform//terraform:defs.bzl", "terraform_root")
+
+terraform_root(
+    name = "root",
+    srcs = [
+        "main.tf",
+    ],
+    modules = [
+        "//module_a",
+        "//module_b",
+    ],
+    terraform_version = "1.6",
+)
+
+sh_test(
+    name = "validate_root",
+    srcs = ["terraform_root_test.sh"],
+    args = [
+        "$(location :root)",
+    ],
+    data = [":root"],
+)

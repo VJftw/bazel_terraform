@@ -1,0 +1,8 @@
+exports_files(
+    [
+        "policy.rego",
+        "terraform_plan.sh",
+        "defs.bzl",
+    ],
+    visibility = ["//:__subpackages__"],
+)

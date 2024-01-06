@@ -11,13 +11,11 @@ This repository and Bazel configuration is based upon [`bazel_terraform`](https:
 - Support for multiple versions of Terraform simultaneously throughout your repositories.
   - This helps you migrate to/support newer Terraform versions if you have more than one `terraform_root` rule.
 
-
 #### TODO
 
-- [ ] Support for *pre* and *post* commands which enable you to perform custom workflows, for example:
+- [ ] Support for ~~*pre* and *post* commands~~ extra data which allows you to perform custom workflows, for example:
   - Authenticating to a declarative set of Accounts/Projects/Subscriptions before a `terraform plan/apply`.
-  - Smoke testing after a `terraform apply`.
-  - Running migrations after a `terraform apply`.
+  - Exporting Terraform outputs after a `terraform apply`, which may be used for smoke metrics, smoke testing, running migrations, etc.
 - [ ] Support for downloading third-party modules via Bazel rules to add integrity checking.
 - [ ] Support for downloading providers via Bazel rules to add integrity checking.
 
