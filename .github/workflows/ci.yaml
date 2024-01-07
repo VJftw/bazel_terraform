@@ -58,11 +58,11 @@ jobs:
         os: ${{ fromJSON(needs.matrix-prep-os.outputs.os) }}
         bazelversion: ${{ fromJSON(needs.matrix-prep-bazelversion.outputs.bazelversions) }}
         folder:
-          - e2e/multiple_versions
-          - e2e/local_module
-          - e2e/common_state_configuration
-          - e2e/opa
-          # - e2e/declarative_authentication
+          - examples/multiple_versions
+          - examples/local_module
+          - examples/common_state_configuration
+          - examples/opa
+          - examples/declarative_authentication
 
         bzlmodEnabled: [true, false]
         exclude:

@@ -2,7 +2,7 @@
 
 load("//terraform/private:util.bzl", "latest_version_for_semver", "maybe_create_windows_native_launcher_script")
 
-_DOC = """Push an terraform_image or terraform_image_index to a remote registry.
+_DOC = """
 """
 
 _attrs = {
@@ -103,7 +103,6 @@ def _impl(ctx):
         outs.append(out)
 
     executable = ctx.actions.declare_file("terraform_venv.sh")
-    # TODO: find correct binary for attr, support default.
 
     ctx.actions.expand_template(
         template = ctx.file._venv_sh_tpl,
