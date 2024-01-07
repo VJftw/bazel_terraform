@@ -1,0 +1,7 @@
+exports_files(
+    [
+        "terraform_plan.sh",
+        "defs.bzl",
+    ],
+    visibility = ["//:__subpackages__"],
+)
