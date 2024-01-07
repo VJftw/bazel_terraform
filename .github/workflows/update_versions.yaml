@@ -1,0 +1,30 @@
+name: Update Versions PR
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Tag
+        run: |-
+          bazel run //scripts:mirror_terraform_releases > terraform/private/versions_new.bzl
+
+      - name: Commit and push update
+        run: |-
+          mv terraform/private/versions_new.bzl terraform/private/versions.bzl
+          git add terraform/private/versions.bzl
+          git commit -m "Updated Terraform Versions"
+
+      - name: create PR
+        run: gh pr create -B main -H new_versions --title 'Update Terraform Versions' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

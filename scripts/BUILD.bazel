@@ -1,4 +1,8 @@
+exports_files(["hashicorp_pgp-key.txt"])
+
 sh_binary(
     name = "mirror_terraform_releases",
     srcs = ["mirror_terraform_releases.sh"],
+    args = ["$(location :hashicorp_pgp-key.txt)"],
+    data = [":hashicorp_pgp-key.txt"],
 )
