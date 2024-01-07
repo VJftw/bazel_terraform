@@ -1,7 +1,5 @@
 "Implementation details for the module rule"
 
-# load("//terraform/private:util.bzl", "maybe_create_windows_native_launcher_script")
-
 _DOC = """
 """
 
@@ -12,16 +10,7 @@ _attrs = {
     "modules": attr.label_list(
         allow_files = False,
     ),
-    # "_terraform_sh_tpl": attr.label(
-    #     default = "terraform.sh.tpl",
-    #     allow_single_file = True,
-    # ),
     "_windows_constraint": attr.label(default = "@platforms//os:windows"),
-    # "toolchain": attr.label(
-    #     allow_single_file = True,
-    #     doc = "Label to an terraform_image or terraform_image_index",
-    #     mandatory = True,
-    # ),
 }
 
 def _impl(ctx):
@@ -64,7 +53,6 @@ def _impl(ctx):
         runfiles = runfiles.merge(module[DefaultInfo].default_runfiles)
 
     return DefaultInfo(
-        # executable = maybe_create_windows_native_launcher_script(ctx, executable),
         files = depset(outs),
         runfiles = runfiles,
     )
@@ -72,15 +60,10 @@ def _impl(ctx):
 terraform_module_lib = struct(
     implementation = _impl,
     attrs = _attrs,
-    # toolchains = [
-    #     "@bazel_terraform//terraform:terraform_toolchain_type",
-    # ],
 )
 
 terraform_module = rule(
     doc = _DOC,
     implementation = terraform_module_lib.implementation,
     attrs = terraform_module_lib.attrs,
-    # toolchains = terraform_module_lib.toolchains,
-    # executable = True,
 )

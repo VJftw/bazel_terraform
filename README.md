@@ -8,16 +8,20 @@ This repository and Bazel configuration is based upon [`bazel_terraform`](https:
 
 ### Features
 
-- Support for multiple versions of Terraform simultaneously throughout your repositories.
+- Multiple versions of Terraform simultaneously throughout your repositories.
   - This helps you migrate to/support newer Terraform versions if you have more than one `terraform_root` rule.
+- Creating re-usable Terraform modules via the `terraform_module` rule.
+- Using common state configuration to create unique Terraform states based on the Bazel Label for the `terraform_root` rule.
+- Extending these rules to support declarative authentication.
+- Extending these rules to support OPA policy evaluation on Terraform plans.
+
+See the `./examples` folder for example uses of all of the above features.
 
 #### TODO
 
-- [ ] Support for ~~*pre* and *post* commands~~ extra data which allows you to perform custom workflows, for example:
-  - Authenticating to a declarative set of Accounts/Projects/Subscriptions before a `terraform plan/apply`.
-  - Exporting Terraform outputs after a `terraform apply`, which may be used for smoke metrics, smoke testing, running migrations, etc.
-- [ ] Support for downloading third-party modules via Bazel rules to add integrity checking.
-- [ ] Support for downloading providers via Bazel rules to add integrity checking.
+- [ ] Downloading third-party modules via Bazel rules to add Bazel integrity checking.
+- [ ] Downloading providers via Bazel rules to add Bazel integrity checking.
+- [ ] Uploading `terraform_module` to a Terraform registry.
 
 ## Installation
 
@@ -38,7 +42,4 @@ With bzlmod, you can use `archive_override` or `git_override`. For `WORKSPACE`, 
 
 ## Usage
 
-### `terraform_module`
-
-
-### `terraform_root`
+See `./examples` folder.
