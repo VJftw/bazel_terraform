@@ -13,7 +13,7 @@ KEY_ID="72D7468F"
 export GNUPGHOME="$(mktemp -d)"
 chmod 0700 "$GNUPGHOME"
 gpg --import "$hashicorp_pgp_key_file"
-echo -e "5\nquit\n" | gpg --command-fd 0 --expert --edit-key $KEY_ID trust
+echo -e "5\nquit\n" | gpg --command-fd 0 --expert --batch --yes --edit-key $KEY_ID trust
 
 mapfile -t terraform_release_url_dirs < \
     <(
@@ -27,20 +27,30 @@ json="{}"
 
 for terraform_release_url in "${terraform_release_url_dirs[@]}"; do
     version="$(echo "$terraform_release_url" | rev | cut -f2 -d/ | rev)"
-    >&2 echo "processing Terraform $version..."
+    >&2 echo "Processing Terraform $version..."
 
     json="$(echo "$json" | jq --arg version "$version" '.[$version] = {}')"
+    >&2 echo "> Added $version to JSON"
 
     sha256sums_url="${terraform_release_url}terraform_${version}_SHA256SUMS"
-    sha256sums_sig_url="${terraform_release_url}terraform_${version}_SHA256SUMS.sig"
+    sha256sums_sig_url="${terraform_release_url}terraform_${version}_SHA256SUMS.$KEY_ID.sig"
     >&2 curl -sL "${sha256sums_url}" -o "terraform_${version}_SHA256SUMS"
+    >&2 echo "> Downloaded ${sha256sums_url}"
     >&2 curl -sL "${sha256sums_sig_url}" -o "terraform_${version}_SHA256SUMS.sig"
-    if ! gpg --verify "terraform_${version}_SHA256SUMS.sig" "terraform_${version}_SHA256SUMS" 2>&1 | grep "Good signature" > /dev/null; then
-        echo "could not find good signature for terraform_${version}_SHA256SUMS.sig"
+    >&2 echo "> Downloaded ${sha256sums_sig_url}"
+
+    verify_out="$(gpg --verify "terraform_${version}_SHA256SUMS.sig" "terraform_${version}_SHA256SUMS" 2>&1 || true)"
+
+    if ! echo "$verify_out" | grep "Good signature" > /dev/null; then
+        >&2 echo "> Could not find good signature for terraform_${version}_SHA256SUMS.sig:"
+        >&2 echo "$verify_out"
         exit 1
     fi
+    >&2 echo "> Verified terraform_${version}_SHA256SUMS"
+
 
     mapfile -t sha256sum_lines < "terraform_${version}_SHA256SUMS"
+    >&2 echo "> Loaded terraform_${version}_SHA256SUMS"
 
     for sha256sum_line in "${sha256sum_lines[@]}"; do
         sha256sum="$(echo "$sha256sum_line" | cut -f1 -d" ")"
@@ -51,7 +61,11 @@ for terraform_release_url in "${terraform_release_url_dirs[@]}"; do
             --arg platform "$platform" \
             --arg sha256sum "$sha256sum" \
             '.[$version][$platform] = $sha256sum')"
+
+        >&2 echo "> Added .$version.$platform = $sha256sum to JSON"
     done
+    >&2 echo "---"
+
 done
 
 cat <<EOF
