@@ -1,6 +1,8 @@
 name: Update Versions PR
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -12,24 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Fetch versions
+      - name: Mirror versions
+        id: mirror-versions
         run: |-
-          bazel run //scripts:mirror_terraform_releases > terraform/private/versions_new.bzl
-
-      - name: Commit and push update
-        run: |-
-          mv terraform/private/versions_new.bzl terraform/private/versions.bzl
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git checkout -b update-terraform-versions
-          git add terraform/private/versions.bzl
-          git commit -m "Updated Terraform Versions"
-          git push origin -u update-terraform-versions
+          bazel run //scripts:mirror_terraform_releases
 
       - name: Create PR
+        if: steps.mirror-versions.outputs.has_changes
         run: >-
-          gh pr create --base main --title 'Update Terraform Versions' --body 'Created by Github action'
+          gh pr create --base main --fill
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
