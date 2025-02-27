@@ -1,25 +1,5 @@
 """
 """
-
-load("@aspect_bazel_lib//lib:windows_utils.bzl", "create_windows_native_launcher_script")
-
-def maybe_create_windows_native_launcher_script(ctx, shell_script):
-    """Create a Windows Batch file to launch the given shell script.
-
-    The rule should specify @bazel_tools//tools/sh:toolchain_type as a required toolchain.
-
-    Args:
-        ctx: Rule context
-        shell_script: The bash launcher script
-
-    Returns:
-        A windows launcher script
-    """
-    if not ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo]):
-        return shell_script
-
-    return create_windows_native_launcher_script(ctx, shell_script)
-
 def latest_version_for_semver(semver, versions):
     """Returns the latest version from versions for the given semver.
 

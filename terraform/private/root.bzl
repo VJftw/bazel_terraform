@@ -1,6 +1,6 @@
 "Implementation details for the root rule"
 
-load("//terraform/private:util.bzl", "latest_version_for_semver", "maybe_create_windows_native_launcher_script")
+load("//terraform/private:util.bzl", "latest_version_for_semver")
 
 _DOC = """
 """
@@ -19,7 +19,6 @@ _attrs = {
         default = "venv.sh.tpl",
         allow_single_file = True,
     ),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     "terraform_version": attr.string(
         default = "",
         doc = "The version of Terraform to use. Partial versions may be specified to use the most recent semantic version.",
@@ -122,7 +121,7 @@ def _impl(ctx):
         runfiles = runfiles.merge(module[DefaultInfo].default_runfiles)
 
     return DefaultInfo(
-        executable = maybe_create_windows_native_launcher_script(ctx, executable),
+        executable = executable,
         files = depset(outs),
         runfiles = runfiles,
     )

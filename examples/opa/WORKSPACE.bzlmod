@@ -1,9 +1,0 @@
-# This file replaces WORKSPACE.bazel when --enable_bzlmod is set
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
-
-http_file(
-    name = "opa",
-    executable = True,
-    sha256 = "71514c6c70e744713656a302131e3172988c4898b43cb503f273086d47ccc299",
-    url = "https://github.com/open-policy-agent/opa/releases/download/v0.60.0/opa_linux_amd64",
-)
