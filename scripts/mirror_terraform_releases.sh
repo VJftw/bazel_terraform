@@ -21,6 +21,9 @@ mapfile -t terraform_release_url_dirs < \
     <(
         curl -sL "${HASHICORP_RELEASES_BASE_URL}/terraform" \
         | grep "terraform_" \
+        | grep -v "alpha" \
+        | grep -v "beta" \
+        | grep -v "rc" \
         | cut -f2 -d \" \
         | xargs printf "${HASHICORP_RELEASES_BASE_URL}%s\n"
     )
@@ -64,7 +67,7 @@ for terraform_release_url in "${terraform_release_url_dirs[@]}"; do
             --arg sha256sum "$sha256sum" \
             '.[$version][$platform] = $sha256sum')"
 
-        >&2 echo "> Added .$version.$platform = $sha256sum to JSON"
+        >&2 echo "> Added $version.$platform = $sha256sum to JSON"
     done
     >&2 echo "---"
 
@@ -90,6 +93,7 @@ fi
 date="$(date --utc -I)"
 
 >&2 echo "New version information generated, committing"
+cd "$BUILD_WORKSPACE_DIRECTORY"
 git checkout -b "auto-update-versions-$date"
 git add "$VERSIONS_FILE"
 git commit -m "Auto updated Terraform versions $date"
