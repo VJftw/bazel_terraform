@@ -2,10 +2,6 @@
 
 bazel_dep(name = "bazel_terraform", version = "0.0.0", dev_dependency = True)
 
-bazel_dep(name = "aspect_bazel_lib", version = "2.1.0")
-bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "platforms", version = "0.0.8")
-
 local_path_override(
     module_name = "bazel_terraform",
     path = "../..",
@@ -17,3 +13,11 @@ terraform.toolchains(terraform_version = "1.6.3")
 
 use_repo(terraform, "terraform_terraform_toolchains")
 register_toolchains("@terraform_terraform_toolchains//:all")
+
+# OPA
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+http_file(
+    name = "opa",
+    sha256 = "71514c6c70e744713656a302131e3172988c4898b43cb503f273086d47ccc299",
+    url = "https://github.com/open-policy-agent/opa/releases/download/v0.60.0/opa_linux_amd64",
+)

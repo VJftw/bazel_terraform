@@ -30,20 +30,4 @@ terraform.toolchains(terraform_version = "1.6.4", sha256_by_platform = {"linux_a
 use_repo(terraform, "terraform_terraform_toolchains")
 register_toolchains("@terraform_terraform_toolchains//:all")
 \`\`\`
-
-## Using WORKSPACE:
-
-\`\`\`starlark
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "bazel_terraform",
-    sha256 = "${SHA}",
-    strip_prefix = "${PREFIX}",
-    url = "https://github.com/bazel-contrib/bazel_terraform/releases/download/${TAG}/${ARCHIVE}",
-)
 EOF
-
-awk 'f;/--SNIP--/{f=1}' examples/multiple_versions/WORKSPACE.bazel
-echo "\`\`\`"

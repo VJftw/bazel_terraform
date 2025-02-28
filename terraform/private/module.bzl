@@ -10,7 +10,6 @@ _attrs = {
     "modules": attr.label_list(
         allow_files = False,
     ),
-    "_windows_constraint": attr.label(default = "@platforms//os:windows"),
 }
 
 def _impl(ctx):
