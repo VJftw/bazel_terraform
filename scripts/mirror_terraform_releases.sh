@@ -84,7 +84,7 @@ EOF
 
 >&2 echo "Wrote $VERSIONS_FILE"
 
-
+cd "$BUILD_WORKSPACE_DIRECTORY"
 if [ -z "$(git status --porcelain "$VERSIONS_FILE")" ]; then
     >&2 echo "No new version information generated, exiting"
     exit 0
@@ -93,7 +93,6 @@ fi
 date="$(date --utc -I)"
 
 >&2 echo "New version information generated, committing"
-cd "$BUILD_WORKSPACE_DIRECTORY"
 git checkout -b "auto-update-versions-$date"
 git add "$VERSIONS_FILE"
 git commit -m "Auto updated Terraform versions $date"
