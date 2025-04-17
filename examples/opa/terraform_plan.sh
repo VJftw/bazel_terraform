@@ -19,6 +19,6 @@ if "$tf_root_venv" "$opa_bin \
     --data "$policy_rego_file" \
     "data.terraform.deny[_]"
 "; then
-    echo "expected OPA denial, but no errors were encountered"
-    exit 1
+	echo "expected OPA denial, but no errors were encountered"
+	exit 1
 fi

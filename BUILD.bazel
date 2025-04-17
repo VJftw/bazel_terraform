@@ -1,0 +1,14 @@
+alias(
+    name = "fmt",
+    actual = "@//tools/format:format.check",
+)
+
+alias(
+    name = "fmt.write",
+    actual = "@//tools/format:format",
+)
+
+alias(
+    name = "lint",
+    actual = "@//tools/lint:lint",
+)
