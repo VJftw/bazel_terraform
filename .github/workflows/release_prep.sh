@@ -8,10 +8,10 @@ TAG=${GITHUB_REF_NAME}
 # The prefix is chosen to match what GitHub generates for source archives
 PREFIX="bazel_terraform-${TAG:1}"
 ARCHIVE="bazel_terraform-$TAG.tar.gz"
-git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
+git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip >$ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
 
-cat << EOF
+cat <<EOF
 ## Using bzlmod with Bazel 6 or later:
 
 1. Add \`common --enable_bzlmod\` to \`.bazelrc\`.

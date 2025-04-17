@@ -1,0 +1,8 @@
+load("@aspect_rules_lint//format:defs.bzl", "format_multirun", "format_test")
+
+format_multirun(
+    name = "format",
+    shell = "@aspect_rules_lint//format:shfmt",
+    starlark = "@buildifier_prebuilt//:buildifier",
+    visibility = ["//visibility:public"],
+)

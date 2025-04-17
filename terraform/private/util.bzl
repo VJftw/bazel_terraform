@@ -1,5 +1,6 @@
 """
 """
+
 def latest_version_for_semver(semver, versions):
     """Returns the latest version from versions for the given semver.
 

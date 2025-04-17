@@ -7,8 +7,7 @@ local_path_override(
 )
 
 terraform = use_extension("@bazel_terraform//terraform:extensions.bzl", "terraform")
-
 terraform.toolchains(terraform_version = "1.6.3")
-
 use_repo(terraform, "terraform_terraform_toolchains")
+
 register_toolchains("@terraform_terraform_toolchains//:all")
