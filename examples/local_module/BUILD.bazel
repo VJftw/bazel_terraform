@@ -5,10 +5,10 @@ terraform_root(
     srcs = [
         "main.tf",
     ],
-    modules = [
-        "//module_a",
-        "//module_b",
-    ],
+    modules = {
+        "a": "//module_a",
+        "b": "//module_b",
+    },
     terraform_version = "1.6",
 )
 

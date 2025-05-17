@@ -19,6 +19,9 @@ with only the toolchain attribute pointing into the platform-specific repositori
 
 # Add more platforms as needed to mirror all the binaries
 # published by the upstream project.
+# TODO: Try to generate this from Terraform Release info 
+#       OR at least have a unit test which verifies all 
+#       platforms are covered. 
 PLATFORMS = {
     "darwin_amd64": struct(
         compatible_with = [

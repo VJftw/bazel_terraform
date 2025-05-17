@@ -1,5 +1,6 @@
 "Implementation details for the root rule"
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//terraform/private:util.bzl", "latest_version_for_semver")
 
 _DOC = """
@@ -8,29 +9,34 @@ _DOC = """
 _attrs = {
     "srcs": attr.label_list(
         allow_files = True,
+        mandatory = True,
     ),
     "var_files": attr.label_list(
         allow_files = True,
+        mandatory = False,
     ),
-    "modules": attr.label_list(
+    "modules": attr.string_keyed_label_dict(
         allow_files = False,
-    ),
-    "_venv_sh_tpl": attr.label(
-        default = "venv.sh.tpl",
-        allow_single_file = True,
+        default = {},
+        doc = " ".join("""
+A mapping of a module name to be placed in `./modules/<module name>` to Module
+Target.
+        """.splitlines()).strip(" "),
+        # TODO: Must meet terraform_module.
+        # providers = [],
+        mandatory = False,
     ),
     "terraform_version": attr.string(
         default = "",
-        doc = "The version of Terraform to use. Partial versions may be specified to use the most recent semantic version.",
+        doc = " ".join("""
+The version of Terraform to use. Partial versions may be specified to use the
+most recent semantic version.
+        """.splitlines()).strip(" "),
         mandatory = False,
     ),
 }
 
 def _impl(ctx):
-    # [x] flatten srcs
-    # [x] substitute bazel vars in files
-    # [x] shift var files into auto-loaded var files
-
     # validate attrs
     # use first defined terraform from toolchain as default.
     terraform = ctx.toolchains["@bazel_terraform//terraform:terraform_toolchain_type"]
@@ -48,6 +54,47 @@ def _impl(ctx):
 
     outs = []
 
+    substitutions = _get_substitutions(ctx)
+    outs += _autoload_var_files(ctx, substitutions)
+    outs += _add_srcs_with_substitutions(ctx, substitutions)
+    outs += _add_modules(ctx)
+
+    meta = ctx.actions.declare_file(".bazel_terraform.json")
+    ctx.actions.write(
+        output = meta,
+        content = json.encode({
+            "terraform_version": terraform_version,
+        }),
+        is_executable = False,
+    )
+    outs.append(meta)
+
+    # executable = ctx.actions.declare_file("terraform_venv.sh")
+
+    # ctx.actions.expand_template(
+    #     template = ctx.file._venv_sh_tpl,
+    #     output = executable,
+    #     is_executable = True,
+    #     substitutions = {
+    #         "{{launcher}}": terraform.terraform_info.launcher.short_path,
+    #         "{{terraform_version}}": terraform_version,
+    #         "{{root_path}}": ctx.files.srcs[0].short_path,
+    #     },
+    # )
+
+    runfiles = ctx.runfiles(files = outs)
+    runfiles = runfiles.merge(terraform.default.default_runfiles)
+
+    # for module in ctx.attr.modules:
+    #     runfiles = runfiles.merge(module[DefaultInfo].default_runfiles)
+
+    return DefaultInfo(
+        # executable = executable,
+        files = depset(outs),
+        runfiles = runfiles,
+    )
+
+def _get_substitutions(ctx):
     substitutions = {
         "{{label}}": str(ctx.label),
         "{{label.name}}": str(ctx.label.name),
@@ -63,29 +110,10 @@ def _impl(ctx):
     elif hasattr(ctx.label, "workspace_name"):
         substitutions["{{label.repo_name}}"] = str(ctx.label.workspace_name)
 
-    # TODO: It might be a "nice-to-have" to replace Bazel labels with their
-    # paths, but that makes the Terraform configuration less portable and tied
-    # to Bazel. Instead, I think it would be a better practice to enforce that
-    # relative paths are used as described in the [Terraform documentation](https://developer.hashicorp.com/terraform/language/modules/sources#local-paths)
-    # and just using Bazel for pre & post Terraform workflows.
-    # for module in ctx.attr.modules:
-    #     module_dir_from_root = paths.dirname(module.files.to_list()[0].tree_relative_path)
-    #     substitutions[str(module.label)] = paths.join(".", ctx.bin_dir.path, module_dir_from_root)
+    return substitutions
 
-    # for k, v in substitutions.items():
-    #     # buildifier: disable=print
-    #     print("replacing '{}' with '{}'".format(k, v))
-
-    for src in ctx.files.srcs:
-        out = ctx.actions.declare_file(src.basename)
-        ctx.actions.expand_template(
-            template = src,
-            output = out,
-            is_executable = False,
-            substitutions = substitutions,
-        )
-        outs.append(out)
-
+def _autoload_var_files(ctx, substitutions):
+    outs = []
     for i, src in enumerate(ctx.files.var_files):
         basename_parts = src.basename.split(".")
         basename_no_ext = basename_parts[0]
@@ -100,31 +128,33 @@ def _impl(ctx):
             substitutions = substitutions,
         )
         outs.append(out)
+    return outs
 
-    executable = ctx.actions.declare_file("terraform_venv.sh")
+def _add_srcs_with_substitutions(ctx, substitutions):
+    outs = []
+    for src in ctx.files.srcs:
+        out = ctx.actions.declare_file(src.basename)
+        ctx.actions.expand_template(
+            template = src,
+            output = out,
+            is_executable = False,
+            substitutions = substitutions,
+        )
+        outs.append(out)
+    return outs
 
-    ctx.actions.expand_template(
-        template = ctx.file._venv_sh_tpl,
-        output = executable,
-        is_executable = True,
-        substitutions = {
-            "{{launcher}}": terraform.terraform_info.launcher.short_path,
-            "{{terraform_version}}": terraform_version,
-            "{{root_path}}": ctx.files.srcs[0].short_path,
-        },
-    )
-
-    runfiles = ctx.runfiles(files = outs)
-    runfiles = runfiles.merge(terraform.default.default_runfiles)
-
-    for module in ctx.attr.modules:
-        runfiles = runfiles.merge(module[DefaultInfo].default_runfiles)
-
-    return DefaultInfo(
-        executable = executable,
-        files = depset(outs),
-        runfiles = runfiles,
-    )
+def _add_modules(ctx):
+    outs = []
+    for module_name, target in ctx.attr.modules.items():
+        mod_dir = paths.join("modules", module_name)
+        for f in target[DefaultInfo].files.to_list():
+            this_f = ctx.actions.declare_file(paths.join(mod_dir, f.basename))
+            ctx.actions.expand_template(
+                template = f,
+                output = this_f,
+            )
+            outs.append(this_f)
+    return outs
 
 terraform_root_lib = struct(
     implementation = _impl,
@@ -139,5 +169,5 @@ terraform_root = rule(
     implementation = terraform_root_lib.implementation,
     attrs = terraform_root_lib.attrs,
     toolchains = terraform_root_lib.toolchains,
-    executable = True,
+    # executable = True,
 )
