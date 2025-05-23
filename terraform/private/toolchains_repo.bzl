@@ -17,6 +17,8 @@ This guidance tells us how to avoid that: we put the toolchain targets in the al
 with only the toolchain attribute pointing into the platform-specific repositories.
 """
 
+load("//terraform/private:versions.bzl", "TERRAFORM_VERSIONS")
+
 # Add more platforms as needed to mirror all the binaries
 # published by the upstream project.
 # TODO: Try to generate this from Terraform Release info 
@@ -129,7 +131,7 @@ resolved_toolchain = rule(
 
 TOOLCHAIN_TMPL = """\
 toolchain(
-    name = "{platform}_toolchain",
+    name = "{version}_{platform}_toolchain",
     exec_compatible_with = {compatible_with},
     toolchain = "{toolchain}",
     toolchain_type = "{toolchain_type}",
@@ -160,13 +162,15 @@ def _toolchains_repo_impl(repository_ctx):
     build_content = BUILD_HEADER_TMPL
 
     for [platform, meta] in PLATFORMS.items():
-        build_content += TOOLCHAIN_TMPL.format(
-            platform = platform,
-            name = repository_ctx.attr.name,
-            compatible_with = meta.compatible_with,
-            toolchain_type = repository_ctx.attr.toolchain_type,
-            toolchain = repository_ctx.attr.toolchain.format(platform = platform),
-        )
+        for terraform_version in TERRAFORM_VERSIONS.keys():
+            build_content += TOOLCHAIN_TMPL.format(
+                platform = platform,
+                version = terraform_version,
+                name = repository_ctx.attr.name,
+                compatible_with = meta.compatible_with,
+                toolchain_type = repository_ctx.attr.toolchain_type,
+                toolchain = repository_ctx.attr.toolchain.format(platform = platform, version = terraform_version),
+            )
 
     repository_ctx.file("BUILD.bazel", build_content)
 

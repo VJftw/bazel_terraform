@@ -41,14 +41,14 @@ def _impl(ctx):
     # use first defined terraform from toolchain as default.
     terraform = ctx.toolchains["@bazel_terraform//terraform:terraform_toolchain_type"]
 
-    if len(terraform.terraform_info.versions) < 1:
+    if len(terraform.terraform_info.terraform_version_to_binary.keys()) < 1:
         fail("no terraform versions defined.")
 
-    terraform_version = terraform.terraform_info.versions[0]
+    terraform_version = terraform.terraform_info.terraform_version_to_binary.keys()[0]
     if ctx.attr.terraform_version != "":
         terraform_version = latest_version_for_semver(
             ctx.attr.terraform_version,
-            terraform.terraform_info.versions,
+            terraform.terraform_version_to_binary.keys(),
         )
         pass
 
