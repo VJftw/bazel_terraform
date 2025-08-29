@@ -93,10 +93,10 @@ fi
 date="$(date --utc -I)"
 
 >&2 echo "New version information generated, committing"
-git checkout -b "auto-update-versions-$date"
+git checkout -b "auto-update-versions"
 git add "$VERSIONS_FILE"
 git commit -m "Auto updated Terraform versions $date"
-git push origin -u "auto-update-versions-$date"
+git push origin -u "auto-update-versions"
 
 if [ -n "${GITHUB_OUTPUT:-}" ]; then
     echo "has_changes=true" >> "$GITHUB_OUTPUT"
