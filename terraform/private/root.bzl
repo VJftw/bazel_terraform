@@ -15,16 +15,15 @@ _attrs = {
         allow_files = True,
         mandatory = False,
     ),
-    "modules": attr.string_keyed_label_dict(
+    "modules": attr.label_list(
         allow_files = False,
-        default = {},
+        default = [],
         doc = " ".join("""
-A mapping of a module name to be placed in `./modules/<module name>` to Module
-Target.
+Modules to be placed in `./modules/`.
         """.splitlines()).strip(" "),
+        mandatory = False,
         # TODO: Must meet terraform_module.
         # providers = [],
-        mandatory = False,
     ),
     "terraform_version": attr.string(
         default = "",
@@ -33,6 +32,12 @@ The version of Terraform to use. Partial versions may be specified to use the
 most recent semantic version.
         """.splitlines()).strip(" "),
         mandatory = False,
+    ),
+    "terraform_tool": attr.label(
+        executable = True,
+        cfg = "exec",
+        allow_files = True,
+        default = Label("@bazel_terraform//terraform/tools/bazel_terraform:bazel_terraform"),
     ),
 }
 
@@ -48,26 +53,55 @@ def _impl(ctx):
     if ctx.attr.terraform_version != "":
         terraform_version = latest_version_for_semver(
             ctx.attr.terraform_version,
-            terraform.terraform_version_to_binary.keys(),
+            terraform.terraform_info.terraform_version_to_binary.keys(),
         )
         pass
 
-    outs = []
-
-    substitutions = _get_substitutions(ctx)
-    outs += _autoload_var_files(ctx, substitutions)
-    outs += _add_srcs_with_substitutions(ctx, substitutions)
-    outs += _add_modules(ctx)
-
-    meta = ctx.actions.declare_file(".bazel_terraform.json")
-    ctx.actions.write(
-        output = meta,
-        content = json.encode({
-            "terraform_version": terraform_version,
-        }),
-        is_executable = False,
+    #
+    out_dir = ctx.actions.declare_directory(ctx.label.name)
+    ctx.actions.run(
+        inputs = ctx.files.var_files,
+        outputs = [out_dir],
+        arguments = [out_dir.path] + [f.path for f in ctx.files.var_files],
+        executable = ctx.executable.terraform_tool,
     )
-    outs.append(meta)
+
+    # ctx.actions.run_shell(outputs = [out_dir], command = "mkdir -p " + out_dir.path)
+    outs = [out_dir]
+    substitutions = _get_substitutions(ctx)
+    # for i, src in enumerate(ctx.files.var_files):
+    #     basename_parts = src.basename.split(".")
+    #     basename_no_ext = basename_parts[0]
+    #     ext = "auto." + ".".join(basename_parts[1:len(basename_parts)])
+    #     out = "{}-{}.{}".format(i, basename_no_ext, ext)
+
+    # copy_file(out, src, paths.join(out_dir.path, out), False, False)
+    # out = ctx.actions.declare_file(paths.join(out_dir.path, out))
+    # ctx.actions.expand_template(
+    #     template = src,
+    #     output = out,
+    #     is_executable = False,
+    #     substitutions = substitutions,
+    # )
+    # outs.append(out)
+
+    #
+    # outs = []
+
+    # substitutions = _get_substitutions(ctx)
+    # outs += _autoload_var_files(ctx, substitutions)
+    # outs += _add_srcs_with_substitutions(ctx, substitutions)
+    # outs += _add_modules(ctx)
+
+    # meta = ctx.actions.declare_file(".bazel_terraform.json")
+    # ctx.actions.write(
+    #     output = meta,
+    #     content = json.encode({
+    #         "terraform_version": terraform_version,
+    #     }),
+    #     is_executable = False,
+    # )
+    # outs.append(meta)
 
     # executable = ctx.actions.declare_file("terraform_venv.sh")
 

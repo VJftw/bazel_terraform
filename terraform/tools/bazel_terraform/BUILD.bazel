@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "bazel_terraform_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/VJftw/bazel-terraform/terraform/tools/bazel_terraform",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "bazel_terraform",
+    embed = [":bazel_terraform_lib"],
+    visibility = ["//visibility:public"],
+)
+
+# go_test(
+#     name = "hello_test",
+#     srcs = ["hello_test.go"],
+#     embed = [":hello_lib"],
+# )
