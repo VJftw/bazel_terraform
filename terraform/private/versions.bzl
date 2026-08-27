@@ -4,6 +4,24 @@ Mirror of Terraform Release info.
 """
 
 TERRAFORM_VERSIONS = {
+  "1.16.0": {
+    "darwin_amd64": "2b2b7d37f6893474fa3622fa96053e54949c4ddfca4aba105380718157936465",
+    "darwin_arm64": "5dd692c6cc76b596029ff3c2b2b4c3a1710f92d3de6d2da3f66bd2e0c2daa92a",
+    "freebsd_386": "0216f0a625c22bf309e8d85bb16edb01dfefbc00c410bd22546c5d24cb177135",
+    "freebsd_amd64": "3bf4755b162bbaa102f4a8269369df2842f3359d314149cdf4e2a04a1067d09b",
+    "freebsd_arm": "2a0d5a108c736266a825aac8f97c93a4e0450b535f0fc5a7468806cbb0f40b2d",
+    "linux_386": "1a61829dea3bb5194433f8a44619cd696817706fb4e2d67caaa56aa0bdc6bde3",
+    "linux_amd64": "41d05b927aa174f15d1228c4eba832a323b716c68b415ef5a00179f46cc602d3",
+    "linux_arm": "ae6f7a891fa7d65b30d7c1cebcd02b2ea2998632ec3def200b4fb9d3d3f135c9",
+    "linux_arm64": "60f86cea49a653e22a93c000f16cbfa391ce41c6f6a11d36557c35da411f684c",
+    "linux_s390x": "7d8aa18a921a287bd79fbb262a325b8210c10cd34732a83a0d6e267a3f62d46f",
+    "openbsd_386": "b41a1379934a03ea25442eb00bfc0b0c6c8c5426f4cf9f531fa18e648cc0fefa",
+    "openbsd_amd64": "94251443ec3748997edd9e8516377f292d950b720505fa27dcadd3e1d4b541b7",
+    "solaris_amd64": "5b8b2747da8d6f0e8ac687f8e2f5828572c522f25b633807fec5b5133cc68bd0",
+    "windows_386": "eae98c1642ee74a96b32df6e5c2a9d6267d652a435171199139d7d6d3c59429f",
+    "windows_amd64": "2a50a95205189c1c9fcefbd34eaa9e94ec905a32a4880bfea34ef9f97757c73f",
+    "windows_arm64": "fde402be1197911cf5401a3bcfcb1f4a3d373294f8d41e910b93dccf9d468f0e"
+  },
   "1.15.9": {
     "darwin_amd64": "3e97c499fac8074adfa3760300662a0158f2fd325144965dd0028deec4086c6b",
     "darwin_arm64": "05b27586a5d7d84105690ecccc7edbbf48bc3d6d577745cb61f163ba990adf4f",
